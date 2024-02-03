@@ -1,6 +1,5 @@
 package com.practice.mydrawingapp
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,18 +9,16 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import org.w3c.dom.Attr
 
-class DrawingView(context : Context, attrs : AttributeSet) : View(context, attrs) {
+class DrawingView(context : Context, attr : AttributeSet) : View(context, attr) {
 
     private var mDrawPath : CustomPath? = null
     private var mCanvasBitmap : Bitmap? = null
     private var mDrawPaint : Paint? = null
     private var mCanvasPaint : Paint? = null
-    private var mBrushSize: Float = 0.toFloat()
+    private var mBrushSize : Float = 0.toFloat()
     private var color = Color.BLACK
     private var canvas : Canvas? = null
-    
 
     init {
         setUpDrawing()
@@ -44,10 +41,10 @@ class DrawingView(context : Context, attrs : AttributeSet) : View(context, attrs
         canvas = Canvas(mCanvasBitmap!!)
     }
 
-    //Change Canvas to Canvas? if fails
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawBitmap(mCanvasBitmap!!, 0f, 0f, mCanvasPaint)
+
         if(!mDrawPath!!.isEmpty){
             mDrawPaint!!.strokeWidth = mDrawPath!!.brushThickness
             mDrawPaint!!.color = mDrawPath!!.color
@@ -55,7 +52,6 @@ class DrawingView(context : Context, attrs : AttributeSet) : View(context, attrs
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val touchX = event?.x
         val touchY = event?.y
@@ -85,10 +81,9 @@ class DrawingView(context : Context, attrs : AttributeSet) : View(context, attrs
                 mDrawPath = CustomPath(color, mBrushSize)
             }
 
-            else -> {
-                return false
-            }
+            else -> return false
         }
+        invalidate()
 
         return true
     }
@@ -97,5 +92,6 @@ class DrawingView(context : Context, attrs : AttributeSet) : View(context, attrs
 
     }
 
-
 }
+
+
