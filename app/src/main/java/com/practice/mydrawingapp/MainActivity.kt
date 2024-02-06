@@ -3,11 +3,14 @@ package com.practice.mydrawingapp
 import android.Manifest
 import android.app.Dialog
 import android.app.usage.ExternalStorageStats
+import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -21,6 +24,15 @@ import com.practice.mydrawingapp.databinding.DialogBrushSizeBinding
 
 class MainActivity : AppCompatActivity() {
 
+    val openGalleryLauncher : ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+            result ->
+            if (result.resultCode == RESULT_OK && result.data != null){
+                val imageBackGround : ImageView = findViewById(R.id.iv_background)
+                imageBackGround.setImageURI(result.data?.data)
+            }
+        }
+
     private val requestPermission : ActivityResultLauncher<Array<String>> =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){
             permmisions ->
@@ -32,6 +44,8 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity,
                         "Permission granted now you can read the storage files.",
                         Toast.LENGTH_SHORT).show()
+                    val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    openGalleryLauncher.launch(pickIntent)
                 } else {
                     if (permissionName == Manifest.permission.READ_EXTERNAL_STORAGE){
                         Toast.makeText(this@MainActivity,
@@ -62,6 +76,14 @@ class MainActivity : AppCompatActivity() {
 
         binding.ibBrush.setOnClickListener {
             showBrushSizeChooserDialog()
+        }
+
+        binding.ibUndo.setOnClickListener {
+            drawingView?.onClickUndo()
+        }
+
+        binding.ibRedo.setOnClickListener {
+            drawingView?.onClickRedo()
         }
 
         binding.ibGallery.setOnClickListener {
